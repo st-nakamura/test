@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <link href="c3.min.css" rel="stylesheet" type="text/css">
+    <script src="c3.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <style>
+        svg#graph,
+        .graphbox {
+            width: 500px;
+            height: 500px;
+        }
+        .graphbox {
+            position: relative;
+        }
+        .circle,.circle0{
+            display: none;
+            opacity: 0;
+            transition: all .2s linear .3s;
+        }
+        .fadeIn {
+            opacity: 1;
+            display: block;
+        }
+        .text1{
+            position: absolute;
+        }
+    </style>
+</head>
+<body>
+    <div class="graphbox">
+        <svg id="graph">
+            <!--<circle r='200' cx='250' cy='250' style="fill:#000000;"></circle>-->
+            <!--<path d="M{250,250}"></path>-->
+            <path d="M250,250 L204.3,14.6 A240,240 0 0,1 250,10z" fill="#e9e0d4" id='c0' class="circle"/>
+            <path d="M250,250 L144.8,34.3 A240,240 0 0,1 204.3,14.6z" fill="#fde4bf" id="c1" class="circle"/>
+            <path d="M250,250 L77.4,83.3 A240,240 0 0,1 144.8,34.3z" fill="#fcd6b4" id="c2"class="circle"/>
+            <path d="M250,250 L32.5,148.6 A240,240 0 0,1 83.3,77.4z" fill="#fac9aa" id="c3"class="circle"/>
+            <path d="M250,250 L10.6,266.7 A240,240 0 0,1 32.5,148.6z" fill="#f9bb9f" id="c4"class="circle"/>
+            <path d="M250,250 L55.9,391 A240,240 0 0,1 10.6,266.7z" fill="#f7b093" id="c5"class="circle"/>
+            <path d="M250,250 L175.9,478.2 A240,240 0 0,1 55.9,391z" fill="#f6a288" id="c6"class="circle"/>
+            <path d="M250,250 L366.3,459.9 A240,240 0 0,1 175.9,478.2z" fill="#f4917d" id="c7"class="circle"/>
+            <path d="M250,250 L486.3,291.6 A240,240 0 0,1 366.3,459.9z" fill="#f3797d" id="c8"class="circle"/>
+            <circle r='70' cx='250' cy='250' style="fill: #fff;"></circle>
+            <path d="M250,250 L250,10 A240,240 0 0,1 486.3,291.6z" fill="#f2486a" id="c9"class="circle circlelast"/>
+            <path d="M260,240 L260,0 A240,240 0 0,1 496.3,281.6z" fill="#f2486a"class="circle0" />
+        </svg>
+        <p class="text1">そのほか</p>
+    </div>
+    
+    
+    <svg id="graph01"></svg>
+    <script>
+        let dataset = [
+            { "name": "風俗", "value": 28 },
+            { "name": "営業", "value": 14 },
+            { "name": "サービス業", "value": 13 },
+            { "name": "水商売", "value": 10 },
+            { "name": "パチンコ", "value": 9 },
+            { "name": "不動産", "value": 8 },
+            { "name": "製造", "value": 6 },
+            { "name": "建設", "value": 5 },
+            { "name": "SE", "value": 4 },
+            { "name": "その他", "value": 3 }
+            ]
+ 
+        let width = 480; // グラフの幅
+        let height = 480; // グラフの高さ
+        let radius = Math.min(width, height) / 2 - 10;
+ 
+        // 2. SVG領域の設定
+        let svg = d3.select("body").append("svg").attr("width", width).attr("height", height);
+        g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+        // 3. カラーの設定
+        let color = d3.scaleOrdinal()
+            .range(["#f2486a", "#f3787d", "#f4907d", "#f6a088", "#f7af93", "#f9bb9f","#fac9aa","#fcd7b4","#fde4bf",'#e9e0d4']);
+ 
+        // 4. pieチャートデータセット用関数の設定
+        let pie = d3.pie()
+            .value(function(d) { return d.value; })
+            .sort(null);
+ 
+        // 5. pieチャートSVG要素の設定
+        let pieGroup = g.selectAll(".pie")
+            .data(pie(dataset))
+            .enter()
+            .append("g")
+            .attr("class", "pie");
+ 
+        arc = d3.arc()
+            .outerRadius(radius)
+            .innerRadius(0);
+ 
+        pieGroup.append("path")
+            .attr("d", arc)
+            .attr("fill", function(d) { return color(d.index) })
+            .attr("opacity", 0.75)
+            .attr("stroke", "none");
+ 
+        // 6. pieチャートテキストSVG要素の設定
+        let text = d3.arc()
+            .outerRadius(radius - 30)
+            .innerRadius(radius - 30);
+        
+        pieGroup.append("text")
+            .attr("fill", "white")
+            .attr("transform", function(d) { return "translate(" + text.centroid(d) + ")"; })
+            .attr("dy", "5px")
+            .attr("font", "10px")
+            .attr("font-weight","bold")
+            .attr("color","#ffffff")
+            .attr("text-anchor", "middle")
+            .text(function(d) { return d.data.name; });  
+    </script>
+
+
+    <script>
+    var chart = c3.generate({
+  bindto: '#graph01',
+  data: {
+     columns: [
+       ['data1', 3],
+       ['data2', 4],
+       ['data3', 5],
+       ['data4', 6],
+       ['data5', 8],
+       ['data6', 9],
+       ['data7', 10],
+       ['data8', 13],
+       ['data9', 14],
+       ['data10', 28]        
+     ],
+    type: 'pie',
+    groups: [['その他', 'SE', '建設', '製造', '不動産', 'パチンコ', '水商売', 'サービス業', '営業', 'data10']]
+  }
+});
+    
+    </script>
+    <script>
+        window.addEventListener('load',()=>{
+            let circle = document.querySelectorAll('.circle');
+            let circle0 = document.querySelector('.circle0');
+                for(let i = 0; i < circle.length; i++){
+                    setTimeout(function(index){
+                        circle[index].classList.add('fadeIn');
+                    }.bind(null,i),i * 500);
+                    setTimeout(()=>{
+                        circle[9].classList.remove('fadeIn');
+                        circle0.classList.add('fadeIn');
+                    },6000);      
+                }
+        });
+        /*$(window).on('load',()=>{
+
+            let circles = $('.circle');
+                console.log(circles);
+                $.each(circles,()=>{
+                   
+                    $(this).fadeIn();
+                });
+               for(let i = 0; i < circles.length; i++){
+                   setTimeout(function(index){
+                        circles[index].fadeIn();
+                   }.bind(null,i),i*500);
+               }
+            setTimeout(()=>{
+                $('.circlelast').fadeOut();
+                $('.circle0').fadeIn();
+            },6000);
+        });*/
+    </script>
+</body>
+</html>
